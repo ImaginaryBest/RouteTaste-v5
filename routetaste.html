@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>RouteTaste AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --syne:'Syne',sans-serif;--dm:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --bg:#FAFAF8;--border:#E8E4DC;--border2:#D4CEBC;
+  --green:#2D6A1F;--green2:#4A9E30;--green-light:#EDF5E8;--green-pale:#F4FAF0;
+  --amber:#C17B20;--amber-light:#FDF4E3;--red:#B83232;--red-light:#FDF0F0;
+  --blue:#1E5FA8;--blue-light:#EEF4FC;--purple:#5B3DB8;--purple-light:#F5F0FF;
+  --txt:#1A1814;--txt2:#5C5849;--txt3:#9C9485;--pill-r:100px;
+}
+body{font-family:var(--dm);background:var(--bg);color:var(--txt);min-height:100vh;font-size:15px;line-height:1.6;}
+.app{max-width:460px;margin:0 auto;min-height:100vh;background:var(--bg);}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:30;height:56px;}
+.logo-mark{width:34px;height:34px;background:var(--green);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;}
+.logo-text{font-family:var(--syne);font-weight:800;font-size:16px;color:var(--txt);letter-spacing:-.4px;}
+.logo-sub{font-size:10px;color:var(--txt3);}
+.ai-chip{margin-left:auto;font-family:var(--mono);font-size:10px;background:var(--green-light);color:var(--green);padding:3px 9px;border-radius:var(--pill-r);border:1px solid #C2DFB0;}
+.scr{display:none;padding:0 0 90px;}.scr.on{display:block;}
+.hero{padding:24px 20px 18px;}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:8px;}
+.hero h1{font-family:var(--syne);font-weight:800;font-size:26px;line-height:1.15;letter-spacing:-.6px;margin-bottom:7px;}
+.hero h1 em{font-style:normal;color:var(--green);}
+.hero p{font-size:13px;color:var(--txt2);line-height:1.65;}
+.chip-section{padding:0 20px 14px;}
+.chip-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;margin-bottom:7px;display:block;}
+.chips{display:flex;gap:5px;flex-wrap:wrap;}
+.chip{font-size:12px;font-weight:500;padding:5px 12px;border-radius:var(--pill-r);background:#fff;border:1px solid var(--border);color:var(--txt2);cursor:pointer;transition:all .15s;}
+.chip:hover{background:var(--green-light);border-color:#C2DFB0;color:var(--green);}
+.form-card{margin:0 16px 14px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;}
+.field{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);}
+.field:last-of-type{border-bottom:none;padding-bottom:0;}
+.field-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.field input{flex:1;font-family:var(--dm);font-size:14px;color:var(--txt);background:none;border:none;outline:none;}
+.field input::placeholder{color:var(--txt3);}
+.field input[type=time]{font-family:var(--mono);font-size:13px;}
+.now-btn{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:var(--pill-r);background:var(--green-light);color:var(--green);border:1px solid #C2DFB0;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.mode-section{padding-top:12px;border-top:1px solid var(--border);margin-top:3px;}
+.mode-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;margin-bottom:7px;display:block;}
+.modes{display:flex;gap:5px;flex-wrap:wrap;}
+.mode{font-size:12px;font-weight:500;padding:5px 11px;border-radius:var(--pill-r);background:var(--bg);border:1px solid var(--border);color:var(--txt2);cursor:pointer;transition:all .15s;}
+.mode.on{background:var(--green);color:#fff;border-color:var(--green);}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 16px 10px;width:calc(100% - 32px);padding:14px;background:var(--green);color:#fff;border:none;border-radius:13px;font-family:var(--syne);font-size:15px;font-weight:700;letter-spacing:-.2px;cursor:pointer;transition:opacity .15s;}
+.cta:hover{opacity:.9;}
+.cta:disabled{opacity:.4;cursor:not-allowed;}
+.cta.ghost{background:#fff;color:var(--green);border:1.5px solid var(--green);margin-top:8px;}
+.err{margin:0 16px;padding:10px 13px;background:var(--red-light);border:1px solid #F5C1C1;border-radius:11px;font-size:13px;color:var(--red);display:none;}
+.loader{text-align:center;padding:70px 20px 40px;}
+.spin-ring{width:44px;height:44px;border:2.5px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 18px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loader-title{font-family:var(--syne);font-weight:700;font-size:18px;letter-spacing:-.3px;margin-bottom:5px;}
+.loader-step{font-size:13px;color:var(--txt3);}
+.loader-bar{width:200px;height:3px;background:var(--border);border-radius:3px;margin:14px auto 0;overflow:hidden;}
+.loader-fill{height:100%;background:var(--green);border-radius:3px;transition:width .5s ease;}
+.loader-quote{margin:18px auto 0;max-width:290px;font-size:12px;color:var(--txt3);font-style:italic;padding:11px 14px;background:#fff;border:1px solid var(--border);border-radius:11px;}
+.route-header{margin:14px 16px 0;background:#fff;border:1px solid var(--border);border-radius:18px;padding:16px 18px;}
+.rh-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;}
+.rh-title{font-family:var(--syne);font-weight:800;font-size:20px;letter-spacing:-.4px;margin-bottom:10px;}
+.rh-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.rh-pill{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:var(--pill-r);background:var(--green-light);color:var(--green);border:1px solid #C2DFB0;}
+.alt-box{margin:8px 16px 0;padding:11px 13px;background:var(--blue-light);border:1px solid #BDD4F0;border-radius:13px;}
+.alt-label{font-family:var(--mono);font-size:10px;color:var(--blue);text-transform:uppercase;margin-bottom:3px;}
+.alt-text{font-size:13px;color:#2A4E80;line-height:1.5;}
+.wx-bar{margin:8px 16px 0;background:#fff;border:1px solid var(--border);border-radius:13px;padding:13px 15px;}
+.wx-bar-title{font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:8px;}
+.wx-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);}
+.wx-row:last-child{border-bottom:none;}
+.wx-name{font-size:13px;color:var(--txt2);font-weight:500;}
+.wx-right{display:flex;align-items:center;gap:6px;}
+.wx-temp{font-family:var(--mono);font-size:13px;font-weight:500;}
+.wx-badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:var(--pill-r);}
+.wx-good{background:var(--green-light);color:var(--green);}
+.wx-hot{background:#FEF3E2;color:#A05A10;}
+.wx-rain{background:var(--blue-light);color:var(--blue);}
+.wx-cool{background:#EEF8FF;color:#1868A8;}
+.stop{margin:10px 16px 0;background:#fff;border:1px solid var(--border);border-radius:18px;overflow:hidden;opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.stop.in{opacity:1;transform:translateY(0);}
+.dish-banner-wrap{position:relative;overflow:hidden;}
+.dish-banner-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.dish-banner{width:100%;height:170px;object-fit:cover;display:none;}
+.dish-banner-overlay{position:absolute;bottom:0;left:0;right:0;padding:12px 15px;background:linear-gradient(to top,rgba(20,16,10,0.85) 0%,transparent 100%);}
+.dish-banner-name{font-family:var(--syne);font-weight:800;font-size:18px;color:#fff;letter-spacing:-.3px;line-height:1.2;}
+.dish-banner-loc{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px;}
+.dish-banner-badge{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 9px;border-radius:var(--pill-r);background:rgba(255,255,255,0.88);}
+.dish-banner-stop-num{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:var(--pill-r);background:rgba(0,0,0,0.45);color:#fff;}
+.dish-chips{display:flex;gap:5px;padding:9px 13px;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none;}
+.dish-chips::-webkit-scrollbar{display:none;}
+.dish-chip{display:flex;align-items:center;gap:5px;flex-shrink:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--pill-r);padding:4px 9px;}
+.dish-chip-name{font-size:11px;font-weight:500;color:var(--txt2);white-space:nowrap;}
+.stop-head{padding:12px 15px 0;}
+.fresh-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.fresh-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:4px;overflow:hidden;}
+.fresh-bar-fill{height:100%;border-radius:4px;transition:width 1s ease .2s;}
+.fresh-pct{font-family:var(--mono);font-size:11px;font-weight:500;}
+.wx-strip{padding:9px 15px;background:var(--bg);display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);}
+.wx-ico{font-size:18px;}
+.wx-strip-temp{font-family:var(--mono);font-size:13px;font-weight:500;}
+.wx-strip-desc{font-size:12px;color:var(--txt3);}
+.wx-strip-tags{display:flex;gap:4px;margin-left:auto;}
+.eta-block{padding:12px 15px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);}
+.eta-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:2px;}
+.eta-time{font-family:var(--syne);font-weight:800;font-size:32px;letter-spacing:-1.5px;line-height:1;}
+.eta-time.green{color:var(--green);}.eta-time.amber{color:var(--amber);}.eta-time.red{color:var(--red);}
+.eta-hours{display:flex;align-items:center;gap:5px;margin-top:4px;}
+.eta-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot-pulse-g{background:var(--green);animation:pu 1.3s ease-in-out infinite;}
+.dot-pulse-a{background:var(--amber);animation:pu 1.3s ease-in-out infinite;}
+.dot-dead{background:var(--red);}
+@keyframes pu{0%,100%{opacity:1;}50%{opacity:.2;}}
+.eta-hours-txt{font-size:12px;color:var(--txt3);}
+.conf-pill{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:var(--pill-r);display:inline-block;margin-bottom:4px;}
+.conf-high{background:var(--green-light);color:var(--green);}
+.conf-med{background:var(--amber-light);color:var(--amber);}
+.detour-tag{font-size:11px;color:var(--txt3);}
+.closure-banner{margin:0 13px 9px;padding:8px 11px;border-radius:9px;}
+.closure-label{font-size:12px;font-weight:600;margin-bottom:2px;}
+.closure-sub{font-size:11px;opacity:.8;}
+.stop-body{padding:11px 15px 3px;}
+.row{display:flex;gap:11px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.row:last-child{border-bottom:none;}
+.row-icon{font-family:var(--mono);font-size:10px;letter-spacing:.8px;color:var(--txt3);text-transform:uppercase;min-width:46px;padding-top:1px;}
+.row-val{font-size:13px;color:var(--txt);line-height:1.55;}
+.row-val strong{font-weight:600;}
+.why-box{margin:9px 15px;padding:13px 15px;background:var(--green-pale);border:1px solid #C8E4B0;border-radius:13px;}
+.why-label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;color:var(--green);text-transform:uppercase;margin-bottom:5px;}
+.why-text{font-size:13px;color:#1E4A10;line-height:1.7;font-style:italic;}
+.ti-box{margin:0 15px 9px;padding:10px 13px;background:var(--amber-light);border:1px solid #EED4A0;border-radius:11px;}
+.ti-label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;color:var(--amber);text-transform:uppercase;margin-bottom:3px;}
+.ti-text{font-size:12px;color:#7A4A08;line-height:1.65;}
+.reviews{padding:0 15px 9px;}
+.reviews-label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
+.review{padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:9px;margin-bottom:5px;}
+.review:last-child{margin-bottom:0;}
+.review-author{font-family:var(--mono);font-size:10px;color:var(--txt3);margin-bottom:2px;}
+.review-text{font-size:12px;color:var(--txt2);line-height:1.55;}
+.actions{display:flex;gap:6px;padding:0 15px 13px;}
+.act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 5px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;border:1px solid var(--border);background:#fff;color:var(--txt2);transition:all .15s;}
+.act.nav{background:var(--green);color:#fff;border-color:var(--green);}
+.act.call{background:var(--blue-light);color:var(--blue);border-color:#BDD4F0;}
+.act.share{background:var(--purple-light);color:var(--purple);border-color:#D4C8F5;}
+.fb-wrap{padding:0 15px 13px;}
+.fb-box{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:11px 13px;}
+.fb-q{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:7px;}
+.fb-stars{display:flex;gap:4px;margin-bottom:7px;}
+.fb-star{font-size:19px;cursor:pointer;opacity:.3;transition:opacity .15s;}
+.fb-star.on{opacity:1;}
+.fb-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px;}
+.fb-tag{font-size:11px;padding:3px 8px;border-radius:var(--pill-r);background:#fff;border:1px solid var(--border);color:var(--txt3);cursor:pointer;}
+.fb-tag.on{background:var(--green-light);border-color:#C2DFB0;color:var(--green);}
+.fb-note{width:100%;padding:7px 9px;border-radius:7px;border:1px solid var(--border);background:#fff;font-family:var(--dm);font-size:12px;color:var(--txt);resize:none;height:44px;outline:none;}
+.fb-submit{width:100%;margin-top:6px;padding:7px;background:var(--green);border:none;border-radius:7px;font-size:12px;font-weight:500;color:#fff;cursor:pointer;}
+.fb-done{text-align:center;padding:7px;font-size:12px;color:var(--green);display:none;}
+.eve-card{margin:10px 16px 0;background:#fff;border:1px solid var(--border);border-radius:18px;padding:16px 18px;}
+.eve-title{font-family:var(--syne);font-weight:700;font-size:16px;letter-spacing:-.3px;margin-bottom:3px;}
+.eve-sub{font-size:13px;color:var(--txt3);margin-bottom:12px;font-style:italic;}
+.eve-moment{padding:9px 0;border-bottom:1px solid var(--border);}
+.eve-moment:last-child{border-bottom:none;padding-bottom:0;}
+.eve-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.eve-emoji{font-size:17px;}
+.eve-mname{font-family:var(--syne);font-weight:600;font-size:14px;}
+.eve-time{margin-left:auto;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:var(--pill-r);background:var(--green-light);color:var(--green);}
+.eve-desc{font-size:13px;color:var(--txt2);line-height:1.6;}
+.tips-card{margin:10px 16px 0;background:var(--txt);border-radius:18px;padding:18px;}
+.tips-title{font-family:var(--syne);font-weight:700;font-size:14px;color:#C8E4B0;margin-bottom:12px;}
+.tip-row{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);}
+.tip-row:last-child{border-bottom:none;padding-bottom:0;}
+.tip-lbl{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:2px;}
+.tip-val{font-size:13px;color:rgba(255,255,255,.8);line-height:1.55;}
+.footer{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--txt3);}
+.footer-dot{width:4px;height:4px;border-radius:50%;background:var(--green);animation:pu 1.5s ease-in-out infinite;}
+.lt{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:#fff;border-top:1.5px solid var(--border);z-index:50;}
+.lt-top{display:flex;align-items:center;gap:9px;padding:11px 15px;cursor:pointer;}
+.lt-pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pu 1.2s ease-in-out infinite;flex-shrink:0;}
+.lt-pulse.warn{background:var(--amber);}.lt-pulse.dead{background:var(--red);animation:none;}
+.lt-name{font-family:var(--syne);font-weight:700;font-size:13px;color:var(--txt);flex:1;}
+.lt-sub{font-size:11px;color:var(--txt3);}
+.lt-toggle{font-family:var(--mono);font-size:11px;color:var(--txt3);padding:3px 7px;border-radius:var(--pill-r);border:1px solid var(--border);}
+.lt-panel{display:none;padding:0 15px 14px;border-top:1px solid var(--border);}
+.lt-panel.open{display:block;}
+.lt-tl{display:flex;align-items:center;margin:10px 0;overflow-x:auto;padding-bottom:3px;}
+.lt-tl-stop{display:flex;flex-direction:column;align-items:center;min-width:50px;}
+.lt-tl-dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--border);background:var(--bg);}
+.lt-tl-dot.done{background:var(--green);border-color:var(--green);}
+.lt-tl-dot.cur{background:var(--green);border-color:#fff;box-shadow:0 0 0 3px var(--green-light);animation:pu 1.3s ease-in-out infinite;}
+.lt-tl-dot.skip{background:var(--border);}
+.lt-tl-line{flex:1;height:2px;background:var(--border);margin-top:-5px;}
+.lt-tl-line.done{background:var(--green);}
+.lt-tl-name{font-size:9px;color:var(--txt3);margin-top:3px;text-align:center;max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lt-tl-name.cur{color:var(--green);font-weight:600;}
+.lt-next{background:var(--green-pale);border:1px solid #C8E4B0;border-radius:13px;padding:12px 14px;margin-bottom:9px;}
+.lt-next-lbl{font-family:var(--mono);font-size:9px;color:var(--green);text-transform:uppercase;margin-bottom:3px;}
+.lt-next-name{font-family:var(--syne);font-weight:700;font-size:15px;color:var(--txt);margin-bottom:2px;}
+.lt-next-dish{font-size:12px;color:var(--txt2);margin-bottom:9px;}
+.lt-stats{display:flex;gap:6px;}
+.lt-stat{flex:1;background:#fff;border:1px solid #C8E4B0;border-radius:8px;padding:6px 8px;}
+.lt-stat-val{font-family:var(--syne);font-weight:700;font-size:14px;color:var(--green);}
+.lt-stat-lbl{font-size:10px;color:var(--txt3);}
+.lt-alert{background:var(--amber-light);border:1px solid #EED4A0;border-radius:9px;padding:8px 11px;margin-bottom:9px;display:none;}
+.lt-alert.show{display:block;}
+.lt-alert-txt{font-size:12px;color:#7A4A08;line-height:1.5;}
+.lt-btns{display:flex;gap:6px;}
+.lt-btn{flex:1;padding:9px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;text-align:center;border:none;}
+.lt-go{background:var(--green);color:#fff;}
+.lt-skip{background:var(--amber-light);color:var(--amber);border:1px solid #EED4A0;}
+.lt-end{background:var(--red-light);color:var(--red);border:1px solid #F5C1C1;}
+.start-trip{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px 16px 0;width:calc(100% - 32px);padding:13px;background:var(--txt);color:#fff;border:none;border-radius:13px;font-family:var(--syne);font-size:14px;font-weight:700;cursor:pointer;}
+.bar-spacer{height:80px;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--txt);color:#fff;padding:9px 16px;border-radius:var(--pill-r);font-size:13px;font-weight:500;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="topbar">
+  <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M3 12h18M12 3l7 9-7 9-7-9 7-9z"/></svg></div>
+  <div><div class="logo-text">RouteTaste</div><div class="logo-sub">Time-aware food stops</div></div>
+  <div class="ai-chip">AI POWERED</div>
+</div>
+
+<div id="sIn" class="scr on">
+  <div class="hero">
+    <div class="hero-eyebrow">Culinary road trip planner</div>
+    <h1>Your highway deserves <em>legendary</em> food stops</h1>
+    <p>Not just where to eat — exactly when, what to order, and why that moment matters.</p>
+  </div>
+  <div class="chip-section">
+    <span class="chip-label">Quick routes</span>
+    <div class="chips">
+      <span class="chip" onclick="fill('Bangalore','Coorg','07:30')">Bangalore → Coorg</span>
+      <span class="chip" onclick="fill('Bangalore','Mysore','07:00')">Bangalore → Mysore</span>
+      <span class="chip" onclick="fill('Bangalore','Ooty','06:30')">Bangalore → Ooty</span>
+      <span class="chip" onclick="fill('Mumbai','Pune','08:00')">Mumbai → Pune</span>
+      <span class="chip" onclick="fill('Kolkata','Digha','07:00')">Kolkata → Digha</span>
+      <span class="chip" onclick="fill('Kolkata','Shantiniketan','07:30')">Kolkata → Shantiniketan</span>
+      <span class="chip" onclick="fill('Bangalore','Hampi','06:30')">Bangalore → Hampi</span>
+    </div>
+  </div>
+  <div class="form-card">
+    <div class="field">
+      <div class="field-dot" style="background:var(--green)"></div>
+      <input id="iF" type="text" placeholder="From — city or town">
+    </div>
+    <div class="field">
+      <div class="field-dot" style="background:var(--red)"></div>
+      <input id="iT" type="text" placeholder="To — destination">
+    </div>
+    <div class="field" style="border-bottom:none">
+      <span style="font-size:14px;color:var(--txt3);">⏱</span>
+      <span style="font-size:13px;color:var(--txt3);white-space:nowrap;">Departs</span>
+      <input id="iTime" type="time" value="07:30">
+      <button class="now-btn" onclick="leaveNow()">NOW</button>
+    </div>
+    <div class="mode-section">
+      <span class="mode-label">Trip style</span>
+      <div class="modes">
+        <span class="mode on" onclick="selM(this,'couple')">💑 Couple</span>
+        <span class="mode" onclick="selM(this,'family')">👨‍👩‍👧 Family</span>
+        <span class="mode" onclick="selM(this,'friends')">🎉 Friends</span>
+        <span class="mode" onclick="selM(this,'solo')">🧳 Solo</span>
+        <span class="mode" onclick="selM(this,'luxury')">✨ Luxury</span>
+      </div>
+    </div>
+  </div>
+  <button class="cta" id="btnP" onclick="plan()">Plan my food journey →</button>
+  <div class="err" id="errB"></div>
+</div>
+
+<div id="sLoad" class="scr">
+  <div class="loader">
+    <div class="spin-ring"></div>
+    <div class="loader-title">Crafting your journey…</div>
+    <div class="loader-step" id="lstp">Detecting route…</div>
+    <div class="loader-bar"><div class="loader-fill" id="lfl" style="width:0%"></div></div>
+    <div class="loader-quote" id="ltip">"The best highway food is the one you reach at exactly the right moment."</div>
+  </div>
+</div>
+
+<div id="sRes" class="scr">
+  <div id="rOut"></div>
+  <button class="cta ghost" onclick="resetRoute()">← Plan another route</button>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2800);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ─── DISH EMOJIS (pure emoji banners, no external images) ─── */
+var DISH_EMOJIS={
+  'mysore pak':'🟡','maddur vade':'🥙','maddur vada':'🥙',
+  'idli':'🍚','tatte idli':'🍚','dosa':'🥞','masala dosa':'🥞','benne dose':'🥞',
+  'filter coffee':'☕','coffee':'☕','vada pav':'🌮','langcha':'🍮',
+  'mishti doi':'🍮','paratha':'🫓','thali':'🍽️','pedha':'🍬',
+  'ladoo':'🟡','pongal':'🍲','default':'🍽️'
+};
+function getDishEmoji(dishes){
+  var d=(dishes||'').toLowerCase(),ks=Object.keys(DISH_EMOJIS).filter(function(k){return k!=='default';});
+  for(var i=0;i<ks.length;i++){if(d.indexOf(ks[i])>=0)return DISH_EMOJIS[ks[i]];}
+  return DISH_EMOJIS['default'];
+}
+function getDishChips(dishes){
+  return dishes.split('·').map(function(d){return{name:d.trim(),emoji:getDishEmoji(d)};});
+}
+
+/* ─── BANNER BG COLOURS per dish ─── */
+var BANNER_COLORS={
+  'mysore pak':'#F5E6B8','maddur vade':'#E8D5B0','maddur vada':'#E8D5B0',
+  'idli':'#F0EDE8','tatte idli':'#F0EDE8','dosa':'#EAD9B0','masala dosa':'#EAD9B0','benne dose':'#EAD9B0',
+  'filter coffee':'#C8A97A','coffee':'#C8A97A','vada pav':'#D4C090','langcha':'#D4A574',
+  'mishti doi':'#E8C89A','paratha':'#D8C4A0','thali':'#C8D8B0','pedha':'#E8D0A0',
+  'ladoo':'#F0D890','pongal':'#D8E0B8','default':'#E8E4DC'
+};
+function getBannerColor(dishes){
+  var d=(dishes||'').toLowerCase(),ks=Object.keys(BANNER_COLORS).filter(function(k){return k!=='default';});
+  for(var i=0;i<ks.length;i++){if(d.indexOf(ks[i])>=0)return BANNER_COLORS[ks[i]];}
+  return BANNER_COLORS['default'];
+}
+
+/* ─── ROUTE GLOBALS ─── */
+var mode='couple';
+function selM(el,m){document.querySelectorAll('.mode').forEach(function(b){b.classList.remove('on');});el.classList.add('on');mode=m;}
+function fill(f,t,tm){document.getElementById('iF').value=f;document.getElementById('iT').value=t;document.getElementById('iTime').value=tm||'07:30';}
+function showRoute(id){['sIn','sLoad','sRes'].forEach(function(s){document.getElementById(s).classList.remove('on');});document.getElementById(id).classList.add('on');}
+function resetRoute(){document.getElementById('rOut').innerHTML='';var lb=document.getElementById('liveBar');if(lb)lb.remove();TRIP.active=false;stopSimMode();showRoute('sIn');}
+function getISTmins(){var n=new Date();return(n.getUTCHours()*60+n.getUTCMinutes()+330)%1440;}
+function getIST(){var t=getISTmins();return{total:t,str:String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};}
+function leaveNow(){document.getElementById('iTime').value=getIST().str;}
+function inputToMins(v){var p=(v||'00:00').split(':');return(+p[0])*60+(+p[1]);}
+function minsToAmPm(t){t=((t%1440)+1440)%1440;var h=Math.floor(t/60),m=t%60,p=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+String(m).padStart(2,'0')+' '+p;}
+function toM(s){var m=s.trim().match(/^(\d+):(\d+)\s*(AM|PM)$/i);if(!m)return null;var h=+m[1],mn=+m[2],p=m[3].toUpperCase();if(p==='PM'&&h!==12)h+=12;if(p==='AM'&&h===12)h=0;return h*60+mn;}
+function frM(t){return minsToAmPm(t);}
+function shT(s,d){var m=toM(s);return m===null?s:frM(m+d);}
+function adjF(s,d){if(d<=0)return Math.min(s+0.02,1);if(d<=30)return s;if(d<=60)return Math.max(s-0.08,0.40);if(d<=120)return Math.max(s-0.18,0.35);return Math.max(s-0.28,0.30);}
+function adjStops(stops,depVal){var depMins=inputToMins(depVal),d=depMins-(7*60+30);return stops.map(function(s){var nf=adjF(s.fs,d);if(s.fixedEta&&s.driveMin!=null){var arr=depMins+s.driveMin,ne=frM(arr);return Object.assign({},s,{eta:ne,arr:ne,fs:nf});}return Object.assign({},s,{eta:shT(s.eta,d),arr:shT(s.arr,d),fs:nf});});}
+function getKey(f,t){var k=f.trim().toLowerCase()+'-'+t.trim().toLowerCase(),ks=Object.keys(DB);for(var i=0;i<ks.length;i++){var key=ks[i];if(key===k)return key;var pt=key.split('-');if(pt.some(function(v){return f.toLowerCase().indexOf(v)>=0;})&&pt.some(function(v){return t.toLowerCase().indexOf(v)>=0;}))return key;}return null;}
+(function(){var el=document.getElementById('iTime');if(el)el.value=getIST().str;})();
+
+/* ─── WEATHER ─── */
+var COORDS={'bangalore':{lat:12.9716,lon:77.5946},'coorg':{lat:12.3375,lon:75.8069},'mysore':{lat:12.2958,lon:76.6394},'ooty':{lat:11.4102,lon:76.6950},'mumbai':{lat:19.0760,lon:72.8777},'pune':{lat:18.5204,lon:73.8567},'kolkata':{lat:22.5726,lon:88.3639},'digha':{lat:21.6289,lon:87.5158},'shantiniketan':{lat:23.6837,lon:87.6779},'hampi':{lat:15.3350,lon:76.4600},'hospet':{lat:15.2689,lon:76.3873},'ramanagara':{lat:12.7135,lon:77.2820},'maddur':{lat:12.5852,lon:77.0474},'kushalnagar':{lat:12.4586,lon:75.9593},'kolaghat':{lat:22.4310,lon:87.8420},'shaktigarh':{lat:23.4060,lon:87.8700},'davanagere':{lat:14.4644,lon:75.9218},'tumkur':{lat:13.3379,lon:77.1173}};
+function wxCode(c){if(c===0)return{e:'☀️',d:'Clear'};if(c<=2)return{e:'⛅',d:'Partly cloudy'};if(c===3)return{e:'☁️',d:'Overcast'};if(c<=49)return{e:'🌫️',d:'Foggy'};if(c<=67)return{e:'🌧️',d:'Rain'};if(c<=82)return{e:'🌧️',d:'Showers'};if(c<=99)return{e:'⛈️',d:'Thunderstorm'};return{e:'🌡️',d:'Unknown'};}
+function wxFoodTip(temp,rain){var tips=[];if(temp>=34)tips.push('🌡️ '+Math.round(temp)+'°C — freshness window shorter today');else if(temp<=22)tips.push('❄️ '+Math.round(temp)+'°C — ideal, windows extend slightly');else tips.push('✅ Good conditions at '+Math.round(temp)+'°C');if(rain>40)tips.push('🌧️ '+rain+'% rain — add 20–40 min to ETA');return tips;}
+function geocode(city){var k=city.trim().toLowerCase();if(COORDS[k])return Promise.resolve(COORDS[k]);return fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=en&format=json').then(function(r){return r.json();}).then(function(d){if(d.results&&d.results[0])return{lat:d.results[0].latitude,lon:d.results[0].longitude};return null;}).catch(function(){return null;});}
+function fetchWx(lat,lon){return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto').then(function(r){return r.json();}).catch(function(){return null;});}
+function wxAtHour(data,h){if(!data||!data.hourly)return null;var times=data.hourly.time,temps=data.hourly.temperature_2m,rains=data.hourly.precipitation_probability,codes=data.hourly.weather_code;for(var i=0;i<times.length;i++)if(new Date(times[i]).getHours()===h)return{temp:temps[i]||28,rain:rains[i]||10,code:codes[i]||0};return{temp:28,rain:10,code:0};}
+function etaHour(eta){var m=(eta||'').match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return 10;var h=+m[1],p=m[3].toUpperCase();if(p==='PM'&&h!==12)h+=12;if(p==='AM'&&h===12)h=0;return h;}
+function fetchAllWeather(stops){return Promise.all(stops.map(function(s){var city=s.loc.split('·')[0].trim().split(' ')[0].toLowerCase();return geocode(city).then(function(c){if(!c)return null;return fetchWx(c.lat,c.lon).then(function(d){return wxAtHour(d,etaHour(s.eta));});}).catch(function(){return null;});}));}
+
+/* ─── CLOSURE ─── */
+function parseHours(h){var m=h.match(/(\d+:\d+\s*(?:AM|PM))\s*[–\-]\s*(\d+:\d+\s*(?:AM|PM))/i);if(!m)return null;return{open:toM(m[1].trim()),close:toM(m[2].trim())};}
+function closureState(stop){var p=parseHours(stop.hours||''),em=toM(stop.eta);if(!p||em===null)return null;var o=p.open,c=p.close,ce=c<o?c+1440:c,ea=em<o?em+1440:em,muc=o-em,mcc=ce-ea;if(ea<o)return{status:'early',label:'Closed at arrival',sub:'Opens at '+stop.hours.match(/(\d+:\d+\s*(?:AM|PM))/i)[1]+' — you arrive '+Math.abs(Math.round(muc))+' min early',color:'amber'};if(ea>ce)return{status:'closed',label:'Closed — past closing time',sub:'Skip this stop.',color:'red'};if(mcc<=30)return{status:'closing',label:'Closing in '+Math.round(mcc)+' min',sub:'Rush.',color:'amber'};if(mcc<=60)return{status:'closing_soon',label:'Closes soon — '+Math.round(mcc)+' min left',sub:"Don't linger.",color:'amber'};return{status:'open',label:'Open at arrival',sub:Math.round(mcc)+' min until closing',color:'green'};}
+
+/* ─── HELPERS ─── */
+function freshColor(s){return s>=0.85?'var(--green)':s>=0.65?'var(--amber)':'var(--red)';}
+function freshLabel(s){return s>=0.85?'Best time':s>=0.65?'Good':'Not ideal';}
+function etaCls(s){return s>=0.85?'green':s>=0.65?'amber':'red';}
+function dotCls(cs){if(!cs||cs.status==='open')return'dot-pulse-g';if(cs.status==='closed'||cs.status==='early')return'dot-dead';return'dot-pulse-a';}
+function confCls(c){return c==='High'?'conf-high':'conf-med';}
+function confTxt(c){return c==='High'?'✦ Reliable':'~ Patterns';}
+function modeNote(m){var n={couple:'Scenic café stop recommended.',family:'All stops have parking & restrooms.',friends:'Grab extra Chikki — road fuel.',solo:'Faster pace — solo beats estimates.',luxury:'Ask for special tray and premium packaging.'};return n[m]||'';}
+
+/* ─── FEEDBACK ─── */
+var fbR={};
+function setS(si,v){fbR[si]=v;for(var i=1;i<=5;i++){var el=document.getElementById('st-'+si+'-'+i);if(el)el.className='fb-star'+(i<=v?' on':'');}}
+function togT(el){el.classList.toggle('on');}
+function subFb(si){var f=document.getElementById('ff-'+si),d=document.getElementById('fd-'+si);if(f)f.style.display='none';if(d)d.style.display='block';}
+
+/* ─── RENDER STOP ─── */
+function rStop(s,i,tot,wx){
+  var pct=Math.round(s.fs*100),fc=freshColor(s.fs);
+  if(wx){if(wx.temp>=34)pct=Math.max(pct-8,15);if(wx.rain>60)pct=Math.max(pct-5,15);}
+  var cs=closureState(s);
+  var mapU='https://www.google.com/maps/search/'+encodeURIComponent(s.mapq||s.name);
+  var shareU='https://api.whatsapp.com/send?text='+encodeURIComponent('Stop at '+s.name+' ('+s.loc+') — arrive by '+s.arr+'. Order: '+s.dishes);
+  var wc=wx?wxCode(wx.code):{e:'',d:''};
+  var chips=getDishChips(s.dishes);
+  var emoji=getDishEmoji(s.dishes);
+  var bgColor=getBannerColor(s.dishes);
+
+  var h='<div class="stop" id="sc'+i+'" style="transition-delay:'+(i*0.1)+'s">';
+
+  // BANNER — pure CSS/emoji, no external images
+  h+='<div class="dish-banner-wrap">';
+  h+='<div class="dish-banner-placeholder" style="background:'+bgColor+';font-size:64px;">'+emoji+'</div>';
+  h+='<div class="dish-banner-overlay"><div class="dish-banner-name">'+esc(s.name)+'</div><div class="dish-banner-loc">📍 '+esc(s.loc)+'</div></div>';
+  h+='<div class="dish-banner-stop-num">Stop '+(i+1)+' of '+tot+'</div>';
+  h+='<div class="dish-banner-badge">'+freshLabel(s.fs)+'</div>';
+  h+='</div>';
+
+  // DISH CHIPS
+  h+='<div class="dish-chips">';
+  chips.forEach(function(chip){h+='<div class="dish-chip"><span style="font-size:14px;">'+chip.emoji+'</span><span class="dish-chip-name">'+esc(chip.name)+'</span></div>';});
+  h+='</div>';
+
+  // FRESHNESS
+  h+='<div class="stop-head"><div class="fresh-row"><div class="fresh-bar-wrap"><div class="fresh-bar-fill" style="width:'+pct+'%;background:'+fc+'"></div></div><span class="fresh-pct" style="color:'+fc+'">'+pct+'% fresh</span></div></div>';
+
+  // WEATHER
+  if(wx){var isHot=wx.temp>=34,isRain=wx.rain>40,isCool=wx.temp<=22;h+='<div class="wx-strip"><span class="wx-ico">'+wc.e+'</span><div><div class="wx-strip-temp">'+Math.round(wx.temp)+'°C</div><div class="wx-strip-desc">'+wc.d+' · '+wx.rain+'% rain</div></div><div class="wx-strip-tags">';if(isHot)h+='<span class="wx-badge wx-hot">Hot</span>';else if(isCool)h+='<span class="wx-badge wx-cool">Cool</span>';else if(isRain)h+='<span class="wx-badge wx-rain">Rain</span>';else h+='<span class="wx-badge wx-good">Good</span>';h+='</div></div>';}
+
+  // ETA
+  h+='<div class="eta-block"><div><div class="eta-eyebrow">ETA at stop</div><div class="eta-time '+etaCls(s.fs)+'">'+esc(s.eta)+'</div><div class="eta-hours"><div class="eta-dot '+dotCls(cs)+'"></div><span class="eta-hours-txt">'+esc(s.hours.replace('Open: ',''))+'</span></div></div><div><div class="conf-pill '+confCls(s.conf)+'">'+confTxt(s.conf)+'</div><div class="detour-tag">'+(s.det?'+'+s.det+' min detour':'On route')+'</div></div></div>';
+
+  // CLOSURE
+  if(cs&&cs.status!=='open'){var cbg=cs.color==='red'?'background:var(--red-light);border:1px solid #F5C1C1;':'background:var(--amber-light);border:1px solid #EED4A0;';var ctc=cs.color==='red'?'color:var(--red)':'color:var(--amber)';h+='<div class="closure-banner" style="'+cbg+'"><div class="closure-label" style="'+ctc+'">'+esc(cs.label)+'</div><div class="closure-sub" style="'+ctc+'">'+esc(cs.sub)+'</div></div>';}
+
+  // BODY
+  h+='<div class="stop-body"><div class="row"><div class="row-icon">Order</div><div class="row-val"><strong>'+esc(s.dishes)+'</strong></div></div><div class="row"><div class="row-icon">Timing</div><div class="row-val">'+esc(s.timing_label)+'</div></div><div class="row"><div class="row-icon">Tip</div><div class="row-val">'+esc(s.guide_tip)+'</div></div>';
+  if(s.phone)h+='<div class="row"><div class="row-icon">Call</div><div class="row-val"><a href="tel:'+esc(s.phone)+'" style="color:var(--blue)">'+esc(s.phone)+'</a></div></div>';
+  h+='</div>';
+  h+='<div class="why-box"><div class="why-label">Why you must stop here</div><div class="why-text">'+esc(s.why)+'</div></div>';
+  if(wx){var tips=wxFoodTip(wx.temp,wx.rain);if(tips.length)h+='<div class="ti-box"><div class="ti-label">Weather × timing</div><div class="ti-text">'+tips.map(function(t){return esc(t);}).join('<br>')+'</div></div>';}
+  if(s.reviews&&s.reviews.length){h+='<div class="reviews"><div class="reviews-label">Traveler reviews</div>';for(var r=0;r<s.reviews.length;r++)h+='<div class="review"><div class="review-author">'+esc(s.reviews[r].author)+'</div><div class="review-text">'+esc(s.reviews[r].text)+'</div></div>';h+='</div>';}
+  h+='<div class="actions"><a class="act nav" href="'+mapU+'" target="_blank">🗺 Directions</a>';
+  if(s.phone)h+='<a class="act call" href="tel:'+esc(s.phone)+'">📞 Call</a>';
+  h+='<a class="act share" href="'+shareU+'" target="_blank">💬 Share</a></div>';
+  var fbTags=['Fresh & hot','Timing perfect','Worth detour','Better expected','Slightly stale','Too crowded'];
+  h+='<div class="fb-wrap"><div class="fb-box"><div class="fb-q">Rate this stop</div><div id="ff-'+i+'"><div class="fb-stars">';
+  for(var k=1;k<=5;k++)h+='<span class="fb-star" id="st-'+i+'-'+k+'" onclick="setS('+i+','+k+')">★</span>';
+  h+='</div><div class="fb-tags">';
+  fbTags.forEach(function(t){h+='<span class="fb-tag" onclick="togT(this)">'+t+'</span>';});
+  h+='</div><textarea class="fb-note" placeholder="Notes (optional)"></textarea><button class="fb-submit" onclick="subFb('+i+')">Submit feedback</button></div><div class="fb-done" id="fd-'+i+'">✅ Thanks!</div></div></div>';
+  h+='</div>';
+  return h;
+}
+
+/* ─── RENDER PAGE ─── */
+function render(from,to,time,route,stops,wxData){
+  wxData=wxData||[];
+  var mn=modeNote(mode);
+  var h='<div class="route-header"><div class="rh-eyebrow">Route overview</div><div class="rh-title">'+esc(from)+' → '+esc(to)+'</div><div class="rh-pills"><span class="rh-pill">⏱ Departs '+esc(time)+'</span><span class="rh-pill">'+esc(route.duration)+'</span><span class="rh-pill">'+esc(route.highway)+'</span><span class="rh-pill">'+stops.length+' stops</span></div>';
+  if(mn)h+='<div style="margin-top:9px;font-size:13px;color:var(--txt2);padding:7px 9px;background:var(--green-pale);border:1px solid #C8E4B0;border-radius:9px;">'+esc(mn)+'</div>';
+  h+='<div style="margin-top:7px;font-size:13px;color:var(--txt3);font-style:italic;">'+esc(route.mood)+'</div></div>';
+  if(route.alt)h+='<div class="alt-box"><div class="alt-label">🔀 '+esc(route.alt.label)+'</div><div class="alt-text">'+esc(route.alt.desc)+'</div></div>';
+  if(wxData.some(function(w){return w;})){h+='<div class="wx-bar"><div class="wx-bar-title">Weather along route</div>';for(var wi=0;wi<stops.length;wi++){var w=wxData[wi];if(!w)continue;var wc2=wxCode(w.code),isH=w.temp>=34,isR=w.rain>40,isC=w.temp<=22;var bc2=isH?'wx-hot':isR?'wx-rain':isC?'wx-cool':'wx-good';h+='<div class="wx-row"><span class="wx-name">'+wc2.e+' '+esc(stops[wi].name.split('·')[0].trim())+'</span><div class="wx-right"><span class="wx-temp">'+Math.round(w.temp)+'°C</span><span class="wx-badge '+bc2+'">'+(isH?'Hot':isR?'Rain':isC?'Cool':'Good')+'</span></div></div>';}h+='</div>';}
+  h+='<button class="start-trip" onclick="initLiveTrip()">🚗 Start live trip</button>';
+  for(var i=0;i<stops.length;i++)h+=rStop(stops[i],i,stops.length,wxData[i]||null);
+  if(route.evening){var ev=route.evening;h+='<div class="eve-card"><div class="eve-title">'+esc(ev.title)+'</div><div class="eve-sub">'+esc(ev.subtitle)+'</div>';for(var ei=0;ei<ev.moments.length;ei++){var mm=ev.moments[ei];h+='<div class="eve-moment"><div class="eve-head"><span class="eve-emoji">'+mm.icon+'</span><span class="eve-mname">'+esc(mm.title)+'</span><span class="eve-time">'+esc(mm.time)+'</span></div><div class="eve-desc">'+esc(mm.desc)+'</div></div>';}h+='</div>';}
+  if(route.tips){var tp=route.tips;h+='<div class="tips-card"><div class="tips-title">Quick intelligence</div><div class="tip-row"><div class="tip-lbl">Must-hit stop</div><div class="tip-val">'+esc(tp.best)+'</div></div><div class="tip-row"><div class="tip-lbl">Most time-sensitive</div><div class="tip-val">'+esc(tp.sensitive)+'</div></div><div class="tip-row"><div class="tip-lbl">Skip if delayed</div><div class="tip-val">'+esc(tp.skip)+'</div></div><div class="tip-row"><div class="tip-lbl">Destination ritual</div><div class="tip-val">'+esc(tp.destination)+'</div></div></div>';}
+  h+='<div class="bar-spacer"></div><div class="footer"><div class="footer-dot"></div><span>ROUTETASTE AI · WEATHER-AWARE FOOD TIMING</span></div>';
+  document.getElementById('rOut').innerHTML=h;
+  window._currentStops=stops;window._currentFrom=from;window._currentTo=to;
+  setTimeout(function(){document.querySelectorAll('.stop').forEach(function(c,ci){setTimeout(function(){c.classList.add('in');},ci*120);});},80);
+}
+
+/* ─── LOADING ─── */
+var STEPS=[[8,'Detecting route…'],[22,'Analysing freshness cycles…'],[38,'Mapping crowd patterns…'],[54,'Scoring specialties…'],[70,'Applying travel style…'],[84,'Crafting itinerary…'],[95,'Finishing up…']];
+var LTIPS=['"The best highway food is the one you reach at exactly the right moment."','"Every great road trip has a legendary stop."','"Morning ghee, afternoon sweets, evening chai — timing is everything."'];
+var stepT=null;
+function startLoad(){var i=0;document.getElementById('lfl').style.width='0%';document.getElementById('lstp').textContent=STEPS[0][1];document.getElementById('ltip').textContent=LTIPS[Math.floor(Math.random()*LTIPS.length)];clearInterval(stepT);stepT=setInterval(function(){if(i<STEPS.length){document.getElementById('lfl').style.width=STEPS[i][0]+'%';document.getElementById('lstp').textContent=STEPS[i][1];i++;}},550);}
+function stopLoad(){clearInterval(stepT);document.getElementById('lfl').style.width='100%';}
+
+/* ─── LIVE TRIP ─── */
+var TRIP={active:false,stops:[],current:0,skipped:{},done:{},watchId:null,notifGranted:false,userLat:null,userLon:null,expanded:true,notifSent:{}};
+function haversine(a,b,c,d){var R=6371,dL=(c-a)*Math.PI/180,dl=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dl/2)*Math.sin(dl/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function kmToMin(k){return Math.round(k/0.8);}
+function stopCoords(s){var city=s.loc.split('·')[0].trim().split(' ')[0].toLowerCase();return COORDS[city]||null;}
+function reqNotif(cb){
+  if(!('Notification'in window)){cb(false);return;}
+  if(Notification.permission==='granted'){cb(true);return;}
+  if(Notification.permission==='denied'){cb(false);return;}
+  Notification.requestPermission().then(function(p){cb(p==='granted');});
+}
+function sendNotif(title,body,tag){
+  if(!TRIP.notifGranted||TRIP.notifSent[tag])return;
+  TRIP.notifSent[tag]=true;
+  try{
+    var n=new Notification(title,{body:body,tag:tag,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%232D6A1F"/><text y="44" x="10" font-size="40">🍽️</text></svg>'});
+    // Auto-close after 8s
+    setTimeout(function(){n.close();},8000);
+    // Click brings focus back
+    n.onclick=function(){window.focus();n.close();};
+  }catch(e){}
+}
+function startLiveTrip(stops,from,to){
+  TRIP.stops=stops;TRIP.current=0;TRIP.skipped={};TRIP.done={};TRIP.notifSent={};TRIP.active=true;TRIP.expanded=true;
+  reqNotif(function(g){
+    TRIP.notifGranted=g;
+    if(g){
+      sendNotif('🚗 RouteTaste Live Trip Started','Tracking your route. We\'ll notify you at each stop.','trip-start');
+    }
+  });
+  if(navigator.geolocation){
+    TRIP.watchId=navigator.geolocation.watchPosition(
+      function(p){TRIP.userLat=p.coords.latitude;TRIP.userLon=p.coords.longitude;updateTripState();},
+      function(err){
+        console.warn('Geolocation error:',err.code,err.message);
+        startSimMode();
+      },
+      {enableHighAccuracy:true,maximumAge:10000,timeout:15000}
+    );
+  }else{startSimMode();}
+  renderLiveBar();
+}
+var SIM_INT=null,SIM_KM=0;
+function startSimMode(){if(SIM_INT)return;SIM_INT=setInterval(function(){SIM_KM+=1.2;updateSimState();},3000);}
+function stopSimMode(){if(SIM_INT){clearInterval(SIM_INT);SIM_INT=null;}}
+function updateSimState(){if(!TRIP.active)return;var ci=TRIP.current;while(ci<TRIP.stops.length&&(TRIP.done[ci]||TRIP.skipped[ci]))ci++;if(ci>=TRIP.stops.length){endTrip();return;}TRIP.current=ci;var s=TRIP.stops[ci],coords=stopCoords(s);if(!coords){updateLiveBar(null,0,0);return;}var dist=Math.max(0,(5+ci*12)-SIM_KM),mins=kmToMin(dist);updateLiveBar(s,dist,mins);}
+function updateTripState(){
+  if(!TRIP.active||TRIP.userLat===null)return;
+  var ci=TRIP.current;
+  while(ci<TRIP.stops.length&&(TRIP.done[ci]||TRIP.skipped[ci]))ci++;
+  if(ci>=TRIP.stops.length){endTrip();return;}
+  TRIP.current=ci;
+  var s=TRIP.stops[ci],coords=stopCoords(s);
+  if(!coords){updateLiveBar(s,null,null);return;}
+  var dist=haversine(TRIP.userLat,TRIP.userLon,coords.lat,coords.lon),mins=kmToMin(dist);
+  // Arrival notification: within 300m
+  if(dist<0.3){
+    if(!TRIP.notifSent['arrive-'+ci]){
+      sendNotif(
+        '📍 You\'ve arrived! — '+s.name,
+        'Order: '+s.dishes.split('·')[0].trim()+' · '+s.guide_tip,
+        'arrive-'+ci
+      );
+    }
+    markDone(ci);
+    return;
+  }
+  // Approaching notification: within 1km
+  if(dist<1&&!TRIP.notifSent['near-'+ci]){
+    sendNotif(
+      '🔔 '+s.name+' in ~'+Math.round(dist*1000)+'m',
+      'Get ready: '+s.dishes.split('·')[0].trim(),
+      'near-'+ci
+    );
+  }
+  updateLiveBar(s,dist,mins);
+}
+function markDone(idx){
+  var s=TRIP.stops[idx];
+  TRIP.done[idx]=true;
+  TRIP.current=idx+1;
+  SIM_KM=0;
+  // "Arrived" toast in-app
+  showToast('✅ Arrived at '+s.name+'!');
+  // Next stop notification
+  var next=TRIP.current;
+  while(next<TRIP.stops.length&&(TRIP.done[next]||TRIP.skipped[next]))next++;
+  if(next<TRIP.stops.length){
+    var ns=TRIP.stops[next];
+    setTimeout(function(){
+      sendNotif('🗺 Next stop: '+ns.name,'Order: '+ns.dishes.split('·')[0].trim()+' · ETA '+ns.eta,'next-'+next);
+    },3000);
+  }
+  renderLiveBar();
+}
+function skipStop(idx){
+  TRIP.skipped[idx]=true;TRIP.current=idx+1;SIM_KM=0;
+  while(TRIP.current<TRIP.stops.length&&(TRIP.done[TRIP.current]||TRIP.skipped[TRIP.current]))TRIP.current++;
+  renderLiveBar();
+}
+function endTrip(){
+  TRIP.active=false;
+  if(TRIP.watchId!==null){navigator.geolocation.clearWatch(TRIP.watchId);TRIP.watchId=null;}
+  stopSimMode();
+  sendNotif('🏁 Trip complete!','Hope the food was legendary. Plan another route anytime.','trip-end');
+  var b=document.getElementById('liveBar');if(b)b.remove();
+  showToast('🏁 Trip ended. Safe travels!');
+}
+var _lbState={stop:null,dist:null,mins:null};
+function updateLiveBar(s,dist,mins){_lbState={stop:s,dist:dist,mins:mins};renderLiveBar();}
+function renderLiveBar(){if(!TRIP.active)return;var el=document.getElementById('liveBar');if(!el){el=document.createElement('div');el.id='liveBar';el.className='lt';document.body.appendChild(el);}var ci=TRIP.current;while(ci<TRIP.stops.length&&(TRIP.done[ci]||TRIP.skipped[ci]))ci++;var s=ci<TRIP.stops.length?TRIP.stops[ci]:null;var dist=_lbState.dist,mins=_lbState.mins;var cs=s?closureState(s):null;var pulseCls=!s?'':'';if(cs&&cs.status!=='open')pulseCls=cs.status==='closed'||cs.status==='early'?'dead':'warn';var doneCount=Object.keys(TRIP.done).length,skipCount=Object.keys(TRIP.skipped).length;var tl='<div class="lt-tl">';for(var ti=0;ti<TRIP.stops.length;ti++){var isDone=!!TRIP.done[ti],isSkip=!!TRIP.skipped[ti],isCur=ti===ci;if(ti>0)tl+='<div class="lt-tl-line'+(isDone?' done':'')+'"></div>';tl+='<div class="lt-tl-stop"><div class="lt-tl-dot '+(isDone?'done':isSkip?'skip':isCur?'cur':'')+'"></div><div class="lt-tl-name '+(isCur?'cur':'')+'">'+TRIP.stops[ti].name.split(' ')[0]+'</div></div>';}tl+='</div>';var bodyH='';if(s){var pct=Math.round(s.fs*100),fc=freshColor(s.fs);bodyH='<div class="lt-next"><div class="lt-next-lbl">Next stop</div><div class="lt-next-name">'+s.name+'</div><div class="lt-next-dish">'+s.dishes.split('·').slice(0,2).join(' · ')+'</div><div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:3px"><div style="height:100%;width:'+pct+'%;background:'+fc+';border-radius:4px"></div></div><div style="font-family:var(--mono);font-size:10px;color:var(--txt3)">Freshness '+pct+'%</div><div class="lt-stats" style="margin-top:7px">';if(dist!==null)bodyH+='<div class="lt-stat"><div class="lt-stat-val">'+Math.round(dist*10)/10+'km</div><div class="lt-stat-lbl">Away</div></div>';if(mins!==null)bodyH+='<div class="lt-stat"><div class="lt-stat-val">~'+mins+'m</div><div class="lt-stat-lbl">Drive</div></div>';bodyH+='<div class="lt-stat"><div class="lt-stat-val">'+doneCount+'/'+TRIP.stops.length+'</div><div class="lt-stat-lbl">Done</div></div></div></div>';bodyH+='<div class="lt-btns"><a class="lt-btn lt-go" href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(s.mapq||s.name)+'" target="_blank">🗺 Nav</a><button class="lt-btn lt-skip" onclick="skipStop('+ci+')">⏭ Skip</button><button class="lt-btn lt-end" onclick="endTrip()">🏁 End</button></div>';}else{bodyH='<div style="text-align:center;padding:12px 0;font-family:var(--syne);font-size:14px;font-weight:700;color:var(--green)">🎉 All stops done!</div><button class="lt-btn lt-end" style="width:100%" onclick="endTrip()">Finish trip</button>';}el.innerHTML='<div class="lt-top" onclick="toggleLP()"><div class="lt-pulse '+pulseCls+'"></div><div><div class="lt-name">'+(s?s.name.split('·')[0].trim():'All stops complete!')+'</div><div class="lt-sub">'+(s&&dist!==null?Math.round(dist*10)/10+' km · ~'+mins+' min':doneCount+' visited · '+skipCount+' skipped')+'</div></div><div class="lt-toggle">'+(TRIP.expanded?'▼':'▲')+'</div></div><div class="lt-panel'+(TRIP.expanded?' open':'')+'">'+tl+(cs&&cs.status!=='open'?'<div class="lt-alert show"><div class="lt-alert-txt">'+cs.label+' · '+cs.sub+'</div></div>':'')+bodyH+'</div>';}
+function toggleLP(){TRIP.expanded=!TRIP.expanded;renderLiveBar();}
+function initLiveTrip(){
+  if(!window._currentStops||!window._currentStops.length)return;
+  // Check geolocation availability first
+  if(!navigator.geolocation){
+    showToast('⚠️ Location not supported on this device');return;
+  }
+  var old=document.getElementById('liveBar');if(old)old.remove();
+  TRIP.notifSent={};
+  // Request location permission proactively with feedback
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      TRIP.userLat=pos.coords.latitude;
+      TRIP.userLon=pos.coords.longitude;
+      startLiveTrip(window._currentStops,window._currentFrom,window._currentTo);
+      window.scrollTo({top:0,behavior:'smooth'});
+    },
+    function(err){
+      var msg=err.code===1?'Location permission denied — using simulation mode.':
+               err.code===2?'Location unavailable — using simulation mode.':
+               'Location timed out — using simulation mode.';
+      showToast('⚠️ '+msg);
+      startLiveTrip(window._currentStops,window._currentFrom,window._currentTo);
+      window.scrollTo({top:0,behavior:'smooth'});
+    },
+    {enableHighAccuracy:true,timeout:8000,maximumAge:0}
+  );
+}
+
+/* ─── DATABASE ─── */
+var DB={
+"bangalore-coorg":{highway:"NH275",duration:"5–6 hrs",mood:"Misty ghats, coffee aromas, winding roads",
+stops:[
+{name:"Kamat Lokaruchi",loc:"Ramanagara · 47 km",eta:"8:15 AM",hours:"Open: 6:00 AM – 11:00 PM",arr:"8:15 AM",fs:0.89,conf:"High",det:0,phone:"",dishes:"Ghee Mysore Pak · Tatte Idli · Filter Coffee",timing_label:"🟢 Best timing",guide_tip:"First 2 hours — ghee Idli arrives soft and steaming. Decoction coffee at peak strength before 9 AM.",why:"The morning ghee quota is highest before 10 AM. Tatte Idli served straight off the vessel — fluffy, ghost-white, drowning in sambar.",reviews:[{author:"Traveler from Bangalore",text:"Reached at 8 AM — idli was pillowy soft, ghee pooling."},{author:"Weekend tripper",text:"Mysore Pak here at 8:30 rivals Guru Sweet Mart if you catch it fresh."}],mapq:"Kamat Lokaruchi Ramanagara Karnataka"},
+{name:"Hotel Maddur Tiffany",loc:"Maddur · 65 km",eta:"9:10 AM",hours:"Open: 7:30 AM – 10:00 PM",arr:"9:10 AM",fs:0.87,conf:"High",det:2,phone:"",dishes:"Maddur Vade · Coconut Burfi · Fresh Buttermilk",timing_label:"🟢 Best timing",guide_tip:"Maddur Vade must be eaten within 20 minutes of frying.",why:"A dish that exists only in the present tense. Arrive at 9:10 AM, eat a Vade that came off the kadai 4 minutes ago.",reviews:[{author:"Mysore highway regular",text:"Hot Maddur Vade at 9 AM is a religious experience."},{author:"Weekend driver",text:"Vade crunch at 9 AM is different from 11 AM."}],mapq:"Hotel Maddur Tiffany Maddur Karnataka"},
+{name:"Guru Sweet Mart",loc:"Mysore · 145 km",eta:"10:55 AM",hours:"Open: 8:00 AM – 9:30 PM",arr:"10:55 AM",fs:0.95,conf:"High",det:5,phone:"0821-2523028",dishes:"Original Mysore Pak · Badhusha · Pedha",timing_label:"🟢 Second batch warm — perfect window",guide_tip:"Second batch hits at 10:30 AM. Order the Special.",why:"In 1935, the Palace halwai invented Mysore Pak here. 80 years unchanged.",reviews:[{author:"Mysore food pilgrim",text:"Second batch still warm at 11 AM."},{author:"Veteran Coorg tripper",text:"80 years and the recipe unchanged."}],mapq:"Guru Sweet Mart Mysore Devaraja Market Karnataka"},
+{name:"Coffee Cup",loc:"Kushalnagar · 226 km",eta:"1:20 PM",hours:"Open: 8:00 AM – 9:30 PM",arr:"1:20 PM",fs:0.92,conf:"High",det:0,phone:"",dishes:"Jaggery Filter Coffee · Estate Cold Brew · Coorg Biscuits",timing_label:"🟢 Perfect afternoon window",guide_tip:"Family estate café — post-lunch quiet. Coffee dripped fresh on demand.",why:"Three generations of Arabica at this altitude. Jaggery filter coffee is the end product of a year's cultivation.",reviews:[{author:"Coffee enthusiast",text:"Jaggery filter coffee at 1:30 PM with no crowd. One of the best cups anywhere."}],mapq:"Coffee Cup Kushalnagar Karnataka"}
+],tips:{best:"Guru Sweet Mart, Mysore — 80 years, original Palace recipe.",sensitive:"Hotel Maddur Tiffany — Vade must be eaten hot within 20 min.",skip:"Sri Rama Sweets if 45+ min behind.",destination:"Madikeri evening: Abbey Falls at dusk, Raja's Seat sunset."}},
+
+"bangalore-mysore":{highway:"NH275",duration:"3–4 hrs",mood:"Palace city energy, silk sarees, sandalwood fragrance",
+stops:[
+{name:"Sri Janardhan Hotel",loc:"Ramanagara · 47 km",eta:"8:15 AM",hours:"Open: 7:00 AM – 10:30 PM",arr:"8:15 AM",fs:0.93,conf:"High",det:3,phone:"",dishes:"Famous Mysore Pak · Tatte Idli · Filter Coffee",timing_label:"🟢 Opening batch — peak",guide_tip:"Opening batch. Ghee ratio perfect for 2 hours.",why:"Sri Janardhan's morning batch — the Pak dissolves before it needs chewing.",reviews:[{author:"Mysore day-tripper",text:"Morning Mysore Pak here rivals the city itself."}],mapq:"Sri Janardhan Hotel Ramanagara Karnataka"},
+{name:"Hotel Maddur Tiffany",loc:"Maddur · 65 km",eta:"9:00 AM",hours:"Open: 7:30 AM – 10:00 PM",arr:"9:00 AM",fs:0.88,conf:"High",det:2,phone:"",dishes:"Maddur Vade · Fresh Coconut Chutney · Sugarcane Juice",timing_label:"🟢 Best crunch window",guide_tip:"Best crunch window. Vade soggy 30 min post-fry.",why:"Maddur Vade has its own Wikipedia entry. It earned it.",reviews:[{author:"Bangalore-Mysore regular",text:"Crunch at 9 AM completely different from 11 AM."}],mapq:"Maddur Vade Maddur Karnataka"},
+{name:"Guru Sweet Mart",loc:"Mysore · 145 km",eta:"10:30 AM",hours:"Open: 8:00 AM – 9:30 PM",arr:"10:30 AM",fs:0.95,conf:"High",det:5,phone:"0821-2523028",dishes:"Original Mysore Pak · Badhusha · Jangri · Pedha",timing_label:"🟢 Second batch warm",guide_tip:"Arriving before noon: fresh batch, shorter queue.",why:"Mysore owns one food completely. Guru Sweet Mart owns that recipe.",reviews:[{author:"Repeat visitor",text:"Recipe genuinely unchanged. 10–11 AM is the optimal window."}],mapq:"Guru Sweet Mart Mysore Devaraja Market Karnataka"},
+{name:"Mylari Dosa",loc:"Mysore city · 148 km",eta:"11:15 AM",hours:"Open: 9:00 AM – 12:30 PM",arr:"11:15 AM",fs:0.76,conf:"Medium",det:3,phone:"",dishes:"Mylari Dosa · Ghee Masala Dosa · Fresh Coconut Chutney",timing_label:"🟡 Good — closes 12:30 sharp",guide_tip:"Closes at 12:30 PM. No exceptions.",why:"Mylari does not advertise. The queue does it for them.",reviews:[{author:"Mysore local food guide",text:"Mylari is the dosa benchmark for Mysore."}],mapq:"Mylari Dosa Restaurant Mysore Karnataka"}
+],tips:{best:"Guru Sweet Mart — the original.",sensitive:"Mylari Dosa — closes 12:30 PM sharp.",skip:"Maddur Vade if behind.",destination:"Mysore evening: Chamundeshwari Temple → Devaraja Market → Palace illumination."}},
+
+"kolkata-digha":{highway:"NH116 via Kolaghat",duration:"3.5–4.5 hrs",mood:"Coastal anticipation, the sea smell building slowly",
+stops:[{name:"The Legendary Kolaghat Milestone",loc:"Kolaghat · NH116 · 75 km",eta:"8:45 AM",hours:"Open: 6:00 AM – 10:00 PM",arr:"8:45 AM",fs:0.92,conf:"High",det:0,phone:"",dishes:"Tandoori Aloo Paratha · Mishti Doi · Kulhad Chai",timing_label:"🟢 Prime Kolaghat window",guide_tip:"Morning rush peaks 8–10 AM. Kochuri hot and puffed.",why:"There is no Kolkata-to-any-destination trip without Kolaghat.",reviews:[{author:"Bengali road-trip veteran",text:"Kolaghat at 8:45 AM — tandoor at full heat."},{author:"Annual Digha tripper",text:"Morning window 8–10 is when everything is freshest."}],mapq:"Kolaghat food stalls NH116 West Bengal"}],
+evening:{title:"🌅 The Ultimate Evening in Digha",subtitle:"Your first Digha evening follows one time-tested ritual.",moments:[{time:"5:30 PM",icon:"🌊",title:"The Beach Stroll",desc:"Walk down New Digha Sea Beach Promenade for the sunset breeze."},{time:"6:30 PM",icon:"🦐",title:"The Live Seafood Fry Ritual",desc:"Tiger Prawns, Sea Crabs, Pomfret. Point to what you want. Charcoal-barbecued. Eat piping hot on the beach."},{time:"8:00 PM",icon:"🐚",title:"Souvenir Stroll",desc:"Sea-shell artifacts, hand-woven mats, cashew nuts."}]},
+tips:{best:"Kolaghat — most legendary food milestone in Bengal.",sensitive:"Kolaghat tandoor window — drops by 10:30 AM.",skip:"Azad Hind if pressed.",destination:"Digha evening: promenade → live seafood fry → shell market."}},
+
+"kolkata-shantiniketan":{highway:"NH19 / NH2 via Shaktigarh",duration:"3–4 hrs",mood:"Rural Bengal rolling by, sweet pilgrimages, Tagore country",
+stops:[
+{name:"Langcha Mahal",loc:"Shaktigarh · NH19 · 95 km",eta:"9:00 AM",hours:"Open: 7:00 AM – 10:00 PM",arr:"9:00 AM",fs:0.93,conf:"High",det:0,phone:"",dishes:"Shaktigarh Langcha · Mishti Doi · Pantua",timing_label:"🟢 Morning batch — peak texture",guide_tip:"Morning batch warm from kadai — caramelisation perfect in first 2 hours.",why:"Shaktigarh is to Langcha what Mysore is to Mysore Pak.",reviews:[{author:"Bengal sweet enthusiast",text:"Morning Langcha — caramelised outside, soft khoya interior."}],mapq:"Langcha Mahal Shaktigarh West Bengal"},
+{name:"ADI LANGCHA BHAWAN",loc:"Shaktigarh · NH19 · 96 km",eta:"9:10 AM",hours:"Open: 7:00 AM – 9:00 PM",arr:"9:10 AM",fs:0.95,conf:"High",det:0,phone:"",dishes:"Adi Langcha (Original Recipe) · Sondesh · Chhena Jalebi",timing_label:"🟢 Original recipe — first batch",guide_tip:"Oldest shop in Shaktigarh. Pre-independence recipe.",why:"Adi Langcha Bhawan was here before independence. The sweet smells seep onto the highway 50m before you see the shop.",reviews:[{author:"Shaktigarh food historian",text:"There is only one original Langcha and this is it."}],mapq:"Adi Langcha Bhawan Shaktigarh West Bengal"}
+],tips:{best:"ADI LANGCHA BHAWAN — pre-independence recipe.",sensitive:"Both Langcha shops — morning batch closes by noon.",skip:"Balaji Food Park if pressed.",destination:"Shantiniketan evening: Sonajhuri Haat at dusk (weekends)."}},
+
+"bangalore-hampi":{highway:"NH48 → NH50 via Chitradurga",duration:"6–7 hrs",mood:"Wind farms, open Deccan plateau, ancient ruins on the horizon",
+alt:{label:"Alternative Route via Davanagere (Recommended for food)",desc:"Adds 30–45 min but passes through Davanagere — home of the legendary coal-fired Benne Dose."},
+stops:[
+{name:"Kamat Upachar · Tumkur",loc:"Tumkur · NH48 · 70 km",eta:"8:00 AM",hours:"Open: 6:00 AM – 11:00 PM",arr:"8:00 AM",fs:0.89,conf:"High",det:0,phone:"",dishes:"Idli Vada · Kesari Bath · Filter Coffee",timing_label:"🟢 Morning batch — peak quality",guide_tip:"Kesari Bath made fresh only in morning session.",why:"Tumkur marks where Bangalore truly releases you.",reviews:[{author:"Bangalore-Hampi road-tripper",text:"Kamat Tumkur at 8 AM is the right breakfast call."}],mapq:"Kamat Upachar restaurant Tumkur NH48 Karnataka"},
+{name:"Sri Guru Kottureshwara",loc:"Davanagere · NH48 · 190 km",eta:"10:20 AM",hours:"Open: 6:00 AM – 1:00 PM",arr:"10:20 AM",fs:0.95,conf:"High",det:10,phone:"",dishes:"Original Benne Dose · Khali Dose · Masala Dosa",timing_label:"🟢 Legendary — closes 1 PM sharp",guide_tip:"Closes at 1 PM. Coal-fired tawa. 17,000+ reviews.",why:"The coal-fired tawa imparts a smoky char no other method achieves.",reviews:[{author:"Dosa institution pilgrim",text:"17,000+ reviews for a reason."},{author:"Davanagere food-tripper",text:"Closes at 1 PM. Worth it."}],mapq:"Sri Guru Kottureshwara Benne Dosa Hotel Davanagere Karnataka"},
+{name:"Malgudi Vatika · Hospet",loc:"Hospet · NH50 · 330 km",eta:"1:30 PM",hours:"Open: 7:00 AM – 11:00 PM",arr:"1:30 PM",fs:0.83,conf:"High",det:5,phone:"08394-222222",dishes:"Hampi Thali · Bagala Bath · Kosambari",timing_label:"🟢 Lunch service — active kitchen",guide_tip:"Most recommended clean vegetarian restaurant before the final 13 km.",why:"Bagala Bath — curd rice tempered with curry leaves — the ideal pre-ruins cool-down meal.",reviews:[{author:"Hampi pilgrim",text:"Malgudi Vatika is the correct last stop before Hampi."}],mapq:"Malgudi Vatika restaurant Hospet Karnataka"}
+],tips:{best:"Sri Guru Kottureshwara, Davanagere — coal-fired Benne Dose.",sensitive:"Sri Guru Kottureshwara — closes 1 PM sharp.",skip:"Highway Dhaba if you had a full Davanagere meal.",destination:"Hampi evening: Virupaksha Temple at golden hour, Hemakuta Hill sunset."}}
+};
+
+/* ─── PLAN ─── */
+function plan(){
+  var from=document.getElementById('iF').value.trim(),to=document.getElementById('iT').value.trim(),time=document.getElementById('iTime').value||getIST().str;
+  var err=document.getElementById('errB');err.style.display='none';
+  if(!from||!to){err.textContent='Please enter both starting point and destination.';err.style.display='block';return;}
+  document.getElementById('btnP').disabled=true;showRoute('sLoad');startLoad();
+  var key=getKey(from,to);
+  var route=key?DB[key]:{highway:"NH (Auto)",duration:"Est. 4–6 hrs",mood:"Open highway, honest dhabas, local food culture",
+    stops:[
+      {name:'Morning Tiffins · '+from,loc:from+' exit',eta:'8:15 AM',hours:'Open: 6:00 AM – 10:00 PM',arr:'8:15 AM',fs:0.88,conf:'High',det:0,phone:'',dishes:'Ghee Idli · Filter Coffee · Medu Vada',timing_label:'🟢 Morning batch only',guide_tip:'Morning batch always freshest.',why:'The road stretches ahead. Eat something honest and warm.',reviews:[{author:'Road-tripper',text:'Morning batch freshest.'}],mapq:'highway tiffin restaurant '+from},
+      {name:'Gateway Café · '+to,loc:to+' entry',eta:'12:30 PM',hours:'Open: 7:00 AM – 9:00 PM',arr:'12:30 PM',fs:0.91,conf:'High',det:2,phone:'',dishes:'Filter Coffee · Tatte Idli · Coconut Chutney',timing_label:'🟢 Pre-arrival ritual',guide_tip:'Last stop before destination.',why:'Everything tastes better when destination is near.',reviews:[{author:'Weekend tripper',text:'Arrival coffee always hits differently.'}],mapq:'cafe restaurant '+to+' entry'}
+    ],
+    tips:{best:'The morning tiffin stop.',sensitive:'Morning tiffins — reheated after 10 AM.',skip:'Midway stop if 45+ min delayed.',destination:'Explore local food culture on arrival.'}
+  };
+  var stops=adjStops(route.stops,time);
+  Promise.all([fetchAllWeather(stops).catch(function(){return stops.map(function(){return null;});}),new Promise(function(r){setTimeout(r,3500);})]).then(function(res){
+    stopLoad();
+    setTimeout(function(){render(from,to,time,route,stops,res[0]||stops.map(function(){return null;}));showRoute('sRes');window.scrollTo(0,0);document.getElementById('btnP').disabled=false;},300);
+  });
+}
+</script>
+</body>
+</html>
